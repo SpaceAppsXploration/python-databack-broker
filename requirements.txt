@@ -1,0 +1,6 @@
+pymongo==2.7.2
+pyorient==1.2.5
+rdflib==4.2
+simplejson
+# bson
+
