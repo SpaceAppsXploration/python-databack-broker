@@ -4,6 +4,7 @@ __author__ = 'lorenzo'
 import unittest
 from pprint import pprint
 import simplejson as json
+import html.parser
 
 from tools import retrieve_json, retrieve_url, raise404
 
@@ -29,47 +30,46 @@ class TestConceptsAPI(unittest.TestCase):
 
 
 class TestConceptsAPI(unittest.TestCase):
-    def test_endpoints(self):
-        url = "http://127.0.0.1:8080/"
-        api = ["concepts/"]
+    """
+    Set of tests for Concepts API
+    """
+    def test_endpoints_http(self):
+        """
+        HTTPConnection:
+        https://docs.python.org/3/library/http.client.html
+        """
+        url = "127.0.0.1:8080"
+        api = ["/concepts/"]
 
-        def ask(endpnt):
-            try:
-                res = retrieve_url(endpnt)
-            except Exception as e:
-                raise e
-            return res
+        import http.client
+        from urllib.parse import quote
+        import codecs
 
         for a in api:
-            response = ask(url + a)
-            if response.status_code == 200:
-                for i, e in enumerate(json.loads(response.text)):
-                    #print(i, e)
-                    to_test = url + a + e["skos:prefLabel"]
-                    r = ask(to_test)
-                    if r.status_code == 200:
+            conn = http.client.HTTPConnection(url)
+            conn.request("GET", a)
+            response = conn.getresponse()
+            print(response.status, response.reason)
+            content = response.read().decode()
+            conn.close()
+            print(type(content))
+            if response.status == 200:
+                #pprint(content)
+                for i, e in enumerate(json.loads(content)):
+                    to_test = quote(a + e["skos:prefLabel"])
+                    conn = http.client.HTTPConnection(url)
+                    conn.request("GET", to_test)
+                    r = conn.getresponse()
+                    if r.status == 200:
                         #pprint(str(i) + to_test + " >> " + str(r.status_code))
                         pass
-                    elif r.status_code == 404:
-                        print('Keys Error 404: ' + to_test)
                     else:
-                        print('Keys Error ' + r.status_code + ' : ' + to_test)
+                        print('Keys Error ' + str(r.status) + ' : ' + to_test)
+                        #print('\n ' + str(r.msg))
+                    conn.close()
             else:
-                raise raise404
+                conn.close()
+                raise ConnectionError(response.status, response.reason)
 
 
-"""
-Response Object:
-     __attrs__ = [
-        '_content',
-        'status_code',
-        'headers',
-        'url',
-        'history',
-        'encoding',
-        'reason',
-        'cookies',
-        'elapsed',
-        'request',
-    ]
-"""
+

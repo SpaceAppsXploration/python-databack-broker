@@ -46,5 +46,3 @@ def retrieve_json(url, method='GET', data=None):
     else:
         raise Exception('retrieve_json(): Wrong Method')
 
-
-raise404 = requests.HTTPError
