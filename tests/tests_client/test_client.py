@@ -6,7 +6,7 @@ from pprint import pprint
 import simplejson as json
 import html.parser
 
-from tools import retrieve_json, retrieve_url, raise404
+from tools import retrieve_json, retrieve_url
 
 
 class TestConceptsAPI(unittest.TestCase):
@@ -44,6 +44,7 @@ class TestConceptsAPI(unittest.TestCase):
         import http.client
         from urllib.parse import quote
         import codecs
+        import time
 
         for a in api:
             conn = http.client.HTTPConnection(url)
@@ -57,9 +58,14 @@ class TestConceptsAPI(unittest.TestCase):
                 #pprint(content)
                 for i, e in enumerate(json.loads(content)):
                     to_test = quote(a + e["skos:prefLabel"])
+                    time.sleep(0.1)
                     conn = http.client.HTTPConnection(url)
                     conn.request("GET", to_test)
-                    r = conn.getresponse()
+                    try:
+                        r = conn.getresponse()
+                    except http.client.BadStatusLine:
+                        print('BadStatusLine ' + str(r.status) + ' : ' + to_test)
+
                     if r.status == 200:
                         #pprint(str(i) + to_test + " >> " + str(r.status_code))
                         pass
@@ -67,9 +73,11 @@ class TestConceptsAPI(unittest.TestCase):
                         print('Keys Error ' + str(r.status) + ' : ' + to_test)
                         #print('\n ' + str(r.msg))
                     conn.close()
+                    assert True
             else:
                 conn.close()
                 raise ConnectionError(response.status, response.reason)
+                assert False
 
 
 
