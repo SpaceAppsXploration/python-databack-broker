@@ -10,26 +10,6 @@ from tools import retrieve_json, retrieve_url
 
 
 class TestConceptsAPI(unittest.TestCase):
-
-    def test_request_subjects(self):
-
-        url = "http://127.0.0.1:8080/concepts/subjects"
-
-        try:
-            response = retrieve_json(url)
-        except Exception as e:
-            raise e
-
-        print("count: " + str(len(response)))
-
-        for s in response:
-            print(s["chronos:code"])
-            print(s["skos:prefLabel"])
-            print(s["chronos:group"])
-            print("\n")
-
-
-class TestConceptsAPI(unittest.TestCase):
     """
     Set of tests for Concepts API
     """
@@ -38,8 +18,8 @@ class TestConceptsAPI(unittest.TestCase):
         HTTPConnection:
         https://docs.python.org/3/library/http.client.html
         """
-        url = "127.0.0.1:8080"
-        api = ["/concepts/"]
+        url = "127.0.0.1:7000"
+        api = ["/concepts/c"]
 
         import http.client
         from urllib.parse import quote
@@ -57,27 +37,25 @@ class TestConceptsAPI(unittest.TestCase):
             if response.status == 200:
                 #pprint(content)
                 for i, e in enumerate(json.loads(content)):
+                    print(i, e)
                     to_test = quote(a + e["skos:prefLabel"])
                     time.sleep(0.1)
                     conn = http.client.HTTPConnection(url)
                     conn.request("GET", to_test)
-                    try:
-                        r = conn.getresponse()
-                    except http.client.BadStatusLine:
-                        print('BadStatusLine ' + str(r.status) + ' : ' + to_test)
+
+                    r = conn.getresponse()
 
                     if r.status == 200:
                         #pprint(str(i) + to_test + " >> " + str(r.status_code))
-                        pass
+                        assert True
                     else:
                         print('Keys Error ' + str(r.status) + ' : ' + to_test)
                         #print('\n ' + str(r.msg))
                     conn.close()
-                    assert True
+
             else:
                 conn.close()
                 raise ConnectionError(response.status, response.reason)
                 assert False
-
 
 

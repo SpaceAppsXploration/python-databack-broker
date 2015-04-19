@@ -4,7 +4,8 @@ A broker for implementing consistency and pseudo-concurrency between MongoDB and
         - "translate" Chronos Mongo instance into OrientDB graph, with a limited mapping of properties:
         - test with MockDatastore
         - Test consistency and pseudo-concurrency (strict concurrency is not needed yet because we are going to translate low write-intensive data first)
-        - Considering to use it as set of small modules to be called by a REST Node.Js layer
+        - Considering to use it as set of small modules to be called by a REST Node.Js layer executing small py modules
+        - Test the APIs
         
 Reference diagram:
 

@@ -40,7 +40,7 @@ def retrieve_json(url, method='GET', data=None):
                 text = h.unescape(requests.post(url, data=data).text)
                 return json.loads(raw_unicode_escape_decode(text)[0])  # using bs4 to treat html entities
             except json.JSONDecodeError as e:
-                return e
+                raise e
         else:
             raise Exception('retrieve_json(): data for POST cannot be None')
     else:
